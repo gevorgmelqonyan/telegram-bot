@@ -2,7 +2,7 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 API_TOKEN = "7963080083:AAFn7tJeLhCXxrrTml4Kjm20mcpyduq7a1k"
-CHANNEL_USERNAME = "@bluebeearmenia"
+CHANNEL_USERNAME = "@bluebee_am"
 
 bot = telebot.TeleBot(API_TOKEN)
 # Կոճակների ստեղծում
@@ -22,9 +22,7 @@ def send_welcome(message):
     keyboard = create_start_keyboard()
     bot.send_message(
         message.chat.id,
-        """Բարև։
-Պարզապես փոքրիկ խնդրանք, բաժանորդագրվիր մեր ալիքին, սեղմիր «Բաժանորդագրված եմ» կոճակը և ստացիր անվճար անսահամանափակ QR-ը 📲😊
-        """,
+        "Խաղի հղումը ստանալու համար նախ բաժանորդագրվիր մեր ալիքին",
         reply_markup=keyboard
     )
 
@@ -36,14 +34,14 @@ def check_subscription(call):
         member = bot.get_chat_member(CHANNEL_USERNAME, user_id)
         if member.status in ["member", "administrator", "creator"]:
             # Եթե բաժանորդագրված է, ուղարկում ենք շնորհակալություն և նկարը
-            with open("img.png", "rb") as photo:  # Փոխարինեք ձեր նկարի անվանումը
-                bot.send_photo(call.message.chat.id, photo, caption="Կարող եք օգտագործել անսահամանափակ")
+                bot.send_message(chat_id=call.message.chat.id, text = "https://liveball.uno/match/1199389")
         else:
             # Եթե չի բաժանորդագրված
-            bot.answer_callback_query(call.id, "Դուք բաժանորդագրված չեք ալիքին, բաժանորդագրվեք", show_alert=True)
+            bot.answer_callback_query(call.id, "Դուք բաժանորդագրված չեք ալիքին, բաժանորդագրվեք հղումը ստանալու համար", show_alert=True)
     except Exception as e:
         # Սխալների հետ հաղորդագրություն
         bot.answer_callback_query(call.id, "Չհաջողվեց ստուգել բաժանորդագրությունը:", show_alert=True)
+        print(e)
 
 if __name__ == "__main__":
-    bot.polling(none_stop=True)
+    bot.infinity_polling(none_stop=True)
