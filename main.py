@@ -1,8 +1,12 @@
+import time
+
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-API_TOKEN = "7963080083:AAFn7tJeLhCXxrrTml4Kjm20mcpyduq7a1k"
-CHANNEL_USERNAME = "@bluebee_am"
+API_TOKEN = "8016439844:AAGrDy-2KjhWYQPAzgDUAUEz13ujvAKWPoU"
+CHANNEL_USERNAME = "@WalkersMadrid"
+
+link = {"link" : "https://liveball.uno/match/1299124"}
 
 bot = telebot.TeleBot(API_TOKEN)
 # Կոճակների ստեղծում
@@ -12,7 +16,7 @@ def create_start_keyboard():
     subscribe_button = InlineKeyboardButton(
         "Բաժանորդագրվել", url=f"https://t.me/{CHANNEL_USERNAME.lstrip('@')}?start=bot")
     # Բաժանորդագրության ստուգման կոճակը
-    check_subscription_button = InlineKeyboardButton("Բաժանորդագրվել եմ", callback_data="check_subscription")
+    check_subscription_button = InlineKeyboardButton("Ստանալ հղումը", callback_data="check_subscription")
     keyboard.add(subscribe_button)
     keyboard.add( check_subscription_button)
     return keyboard
@@ -26,6 +30,11 @@ def send_welcome(message):
         reply_markup=keyboard
     )
 
+@bot.message_handler(func=lambda message: message.text.lower().startswith("link-"))
+def reset_game_link(message):
+    link["link"] = message.text.split("-")[1]
+
+
 @bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
 def check_subscription(call):
     user_id = call.from_user.id
@@ -34,7 +43,9 @@ def check_subscription(call):
         member = bot.get_chat_member(CHANNEL_USERNAME, user_id)
         if member.status in ["member", "administrator", "creator"]:
             # Եթե բաժանորդագրված է, ուղարկում ենք շնորհակալություն և նկարը
-                bot.send_message(chat_id=call.message.chat.id, text = "https://liveball.uno/match/1199389")
+            msg = bot.send_message(chat_id=call.message.chat.id, text = link["link"])
+            time.sleep(60)
+            bot.delete_message(message_id=msg.message_id, chat_id=call.message.chat.id)
         else:
             # Եթե չի բաժանորդագրված
             bot.answer_callback_query(call.id, "Դուք բաժանորդագրված չեք ալիքին, բաժանորդագրվեք հղումը ստանալու համար", show_alert=True)
