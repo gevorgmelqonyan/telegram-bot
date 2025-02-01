@@ -4,7 +4,8 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 API_TOKEN = "8016439844:AAGrDy-2KjhWYQPAzgDUAUEz13ujvAKWPoU"
 CHANNEL_USERNAME = "@WalkersMadrid"
 
-link = {"link": "https://liveball.uno/match/1299124"}
+link = {"link1": "https://liveball.uno/match/1299124",
+        "link2": "somethibg"}
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -32,10 +33,13 @@ def send_welcome(message):
     )
 
 
-@bot.message_handler(func=lambda message: message.text.lower().startswith("link-"))
+@bot.message_handler(func=lambda message: message.text.lower().startswith("link1-"))
 def reset_game_link(message):
-    link["link"] = message.text.split("-")[1]
+    link["link1"] = message.text.split("-")[1]
 
+@bot.message_handler(func=lambda message: message.text.lower().startswith("link2-"))
+def reset_game_link(message):
+    link["link2"] = message.text.split("-")[1]
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_subscription")
 def check_subscription(call):
@@ -43,7 +47,8 @@ def check_subscription(call):
     try:
         member = bot.get_chat_member(CHANNEL_USERNAME, user_id)
         if member.status in ["member", "administrator", "creator"]:
-            msg = bot.send_message(chat_id=call.message.chat.id, text=link["link"])
+            bot.send_message(chat_id=call.message.chat.id, text=link["link1"])
+            bot.send_message(chat_id=call.message.chat.id, text=link["link2"])
 
         else:
             bot.answer_callback_query(call.id, "Դուք բաժանորդագրված չեք ալիքին, բաժանորդագրվեք հղումը ստանալու համար",
